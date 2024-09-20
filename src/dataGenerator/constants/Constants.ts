@@ -34,4 +34,13 @@ export class Constants {
    * This constant specifies the default number of characters for the username part of generated email addresses.
    */
   public static readonly DEFAULT_EMAIL_USERNAME_LENGTH: number = 10;
+
+  /**
+   * The default namespace used for generating unique identifiers.
+   *
+   * This constant provides a default UUID that can be utilized as a namespace for various data generation purposes,
+   * ensuring uniqueness and consistency across generated data.
+   */
+  public static readonly DEFAULT_NAMESPACE: string =
+    "123e4567-e89b-12d3-a456-426614174000";
 }

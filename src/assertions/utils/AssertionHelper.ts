@@ -1571,3 +1571,59 @@ export function assertFunctionReturns<T>(
     );
   }
 }
+
+/**
+ * Asserts that the provided value is an odd number.
+ *
+ * @param {any} obj - The value to check.
+ * @param {string} [message] - Optional custom message for the assertion error.
+ * @throws {AssertionException} If the value is not an odd number.
+ */
+export function assertIsOdd(
+  obj: any,
+  message: string = `Expected an odd number but received ${typeof obj}`
+): void {
+  assertIsNumber(obj, message); // Ensure it's a number
+  if (obj % 2 === 0) {
+    throw new AssertionException(`${message}`);
+  }
+}
+
+/**
+ * Asserts that the provided value is an even number.
+ *
+ * @param {any} obj - The value to check.
+ * @param {string} [message] - Optional custom message for the assertion error.
+ * @throws {AssertionException} If the value is not an even number.
+ */
+export function assertIsEven(
+  obj: any,
+  message: string = `Expected an even number but received ${typeof obj}`
+): void {
+  assertIsNumber(obj, message); // Ensure it's a number
+  if (obj % 2 !== 0) {
+    throw new AssertionException(`${message}`);
+  }
+}
+
+/**
+ * Asserts that the provided value is a prime number.
+ *
+ * @param {any} obj - The value to check.
+ * @param {string} [message] - Optional custom message for the assertion error.
+ * @throws {AssertionException} If the value is not a prime number.
+ */
+export function assertIsPrime(
+  obj: any,
+  message: string = `Expected a prime number but received ${typeof obj}`
+): void {
+  if (obj < 2 || !Number.isInteger(obj)) {
+    throw new AssertionException(`${message}`);
+  }
+
+  for (let i = 2; i <= Math.sqrt(obj); i++) {
+    if (obj % i === 0) {
+      throw new AssertionException(`${message}`);
+    }
+  }
+}

@@ -51,9 +51,8 @@ export function generateEmail(
   domain: string = Constants.DEFAULT_DOMAIN,
   usernameLength: number = Constants.DEFAULT_EMAIL_USERNAME_LENGTH
 ): string {
-  // Ensure `generateString` function is available in your TypeScript code
   const username = generateString(usernameLength);
-  return username + "@" + domain;
+  return username + domain;
 }
 
 /**
@@ -297,7 +296,7 @@ function isLeapYear(year: number): boolean {
 export function generateUuid(
   type: UuidType = UuidType.V4,
   name?: string,
-  namespace?: string
+  namespace = Constants.DEFAULT_NAMESPACE
 ): string {
   switch (type) {
     case UuidType.V1:
