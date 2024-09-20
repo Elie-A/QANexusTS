@@ -168,7 +168,85 @@ export function assertThrows(
   throw new AssertionException(message);
 }
 
+/**
+ * Asserts that the given object matches the specified type.
+ *
+ * @param obj - The object to check.
+ * @param expectedType - The expected type as a string ('string', 'number', 'array', 'Uint8Array', 'Map', 'Set', etc.).
+ * @param message - An optional custom message to include in the exception if the assertion fails.
+ * @throws {Error} If the object's actual type does not match the expected type.
+ *
+ * @example
+ * assertIsTypeOf(123, 'number'); // Passes
+ * assertIsTypeOf([1, 2, 3], 'array'); // Passes
+ * assertIsTypeOf(new Uint8Array(5), 'Uint8Array'); // Passes
+ * assertIsTypeOf(new Map(), 'Map'); // Passes
+ */
 export function assertIsTypeOf(
+  obj: any,
+  expectedType: string,
+  message?: string
+): void {
+  let actualType: string;
+
+  // Determine the actual type of the object
+  if (obj === null) {
+    actualType = "null";
+  } else if (Array.isArray(obj)) {
+    actualType = "array";
+  } else if (obj instanceof Uint8Array) {
+    actualType = "Uint8Array";
+  } else if (obj instanceof Uint16Array) {
+    actualType = "Uint16Array";
+  } else if (obj instanceof Uint32Array) {
+    actualType = "Uint32Array";
+  } else if (obj instanceof Int8Array) {
+    actualType = "Int8Array";
+  } else if (obj instanceof Int16Array) {
+    actualType = "Int16Array";
+  } else if (obj instanceof Int32Array) {
+    actualType = "Int32Array";
+  } else if (obj instanceof Float32Array) {
+    actualType = "Float32Array";
+  } else if (obj instanceof Float64Array) {
+    actualType = "Float64Array";
+  } else if (obj instanceof ArrayBuffer) {
+    actualType = "ArrayBuffer";
+  } else if (obj instanceof Map) {
+    actualType = "Map";
+  } else if (obj instanceof Set) {
+    actualType = "Set";
+  } else if (obj instanceof WeakMap) {
+    actualType = "WeakMap";
+  } else if (obj instanceof WeakSet) {
+    actualType = "WeakSet";
+  } else if (obj instanceof Date) {
+    actualType = "Date";
+  } else if (obj instanceof RegExp) {
+    actualType = "RegExp";
+  } else if (obj instanceof Error) {
+    actualType = "Error";
+  } else if (obj instanceof Promise) {
+    actualType = "Promise";
+  } else if (obj instanceof Proxy) {
+    actualType = "Proxy";
+  } else if (obj instanceof Function) {
+    actualType = "function"; // Handle functions
+  } else if (obj instanceof Object) {
+    actualType = "object"; // Plain objects
+  } else {
+    actualType = typeof obj;
+  }
+
+  // Compare the actual type with the expected type
+  if (actualType !== expectedType) {
+    throw new Error(
+      message || `Expected type: ${expectedType}, but was: ${actualType}`
+    );
+  }
+}
+
+export function assertIsTypeOfClass(
   expectedType: { new (...args: any[]): any },
   obj: any,
   message: string = `Expected type: ${expectedType.name}, but was: ${obj.constructor.name}`
@@ -1296,21 +1374,28 @@ export function assertIsNotArray(
 }
 
 export function assertArrayLength(
-  array: any[],
+  array: Array<any> | Uint8Array | ArrayBuffer, // Accepts standard arrays and typed arrays
   expectedLength: number,
   message: string = `Expected array length is different than actual array length`
 ): void {
   /**
    * Asserts that the length of the array matches the expected length.
    *
-   * @param array - The array to check.
+   * @param array - The array to check. Can be a standard array or a typed array (like Uint8Array).
    * @param expectedLength - The expected length of the array.
    * @param message - The error message if the assertion fails.
-   * @throws AssertionException - If the length of the array does not match the expected length.
+   * @throws {Error} - If the length of the array does not match the expected length.
    */
-  if (array.length !== expectedLength) {
-    throw new AssertionException(
-      `${message} Expected array length: ${expectedLength}, but was: ${array.length}`
+
+  // If the array is an ArrayBuffer, use its byte length
+  const length =
+    array instanceof ArrayBuffer
+      ? (array as ArrayBuffer).byteLength
+      : (array as { length: number }).length;
+
+  if (length !== expectedLength) {
+    throw new Error(
+      `${message} Expected array length: ${expectedLength}, but was: ${length}`
     );
   }
 }

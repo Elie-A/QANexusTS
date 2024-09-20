@@ -153,7 +153,7 @@ This project is licensed under the MIT License.
 
 ## Issues, Bug Reporting
 
-If you encounter any issues or bugs, please report them on the [IssuesTracker]https://github.com/Elie-A/QANexusTS/issues with detailed step on how to reproduce the issue
+If you encounter any issues or bugs, please report them on the [IssuesTracker](https://github.com/Elie-A/QANexusTS/issues) with detailed steps on how to reproduce the issue
 
 ## Improvements, Suggestions
 

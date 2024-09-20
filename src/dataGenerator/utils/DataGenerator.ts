@@ -168,6 +168,67 @@ export function generateDate(format?: string): string {
 }
 
 /**
+ * Generates a Date object based on the specified format.
+ *
+ * If no format is provided, the function defaults to the current date.
+ * If the format includes 'yyyy', a random year between 1900 and 1999 is generated.
+ * If the format includes 'MM', a random month is generated (1-12).
+ * If the format includes 'MMM', a random month abbreviation is selected.
+ * If the format includes 'dd', a random day is generated based on the maximum days of the month.
+ *
+ * @param format - An optional string that specifies the date format. Supported patterns:
+ *                 - 'yyyy' for a random year
+ *                 - 'MM' for a random month (01-12)
+ *                 - 'MMM' for a random month abbreviation
+ *                 - 'dd' for a random day of the month
+ * @returns A Date object representing the generated date.
+ * @throws {Error} If the month generated is invalid or exceeds the maximum days.
+ *
+ * @example
+ * const randomDate = generateDateObject("yyyy-MM-dd");
+ * console.log(randomDate); // Logs a random date
+ *
+ * const currentDate = generateDateObject();
+ * console.log(currentDate); // Logs the current date
+ */
+export function generateDateObject(format?: string): Date {
+  let year: number | undefined,
+    month: number | undefined,
+    day: number | undefined;
+
+  // Generate year if 'yyyy' is in format
+  if (format?.includes("yyyy")) {
+    year = 1900 + Math.floor(Math.random() * 100);
+  } else {
+    year = new Date().getFullYear(); // Default to current year
+  }
+
+  // Generate month
+  if (format?.includes("MM")) {
+    month = 1 + Math.floor(Math.random() * 12); // Random month between 1 and 12
+  } else if (format?.includes("MMM")) {
+    const monthKeys = Object.keys(MonthsAbbreviationsEnum) as Array<
+      keyof typeof MonthsAbbreviationsEnum
+    >;
+    const randomIndex = Math.floor(Math.random() * monthKeys.length);
+    month = monthKeys.indexOf(monthKeys[randomIndex]) + 1; // Convert month name to month number
+  } else {
+    month = new Date().getMonth() + 1; // Default to current month
+  }
+
+  // Generate day
+  if (format?.includes("dd")) {
+    let maxDays = getMaxDays(month, year!); // Get max days for the month and year
+    day = 1 + Math.floor(Math.random() * maxDays); // Random day between 1 and maxDays
+  } else {
+    day = new Date().getDate(); // Default to current day
+  }
+
+  // Return the constructed Date object
+  return new Date(year!, month! - 1, day!); // Month is 0-indexed
+}
+
+/**
  * Type guard to check if a format string is a valid `SupportedDateFormats` value.
  *
  * @param format The format string to check.
@@ -274,7 +335,7 @@ export function generateBoolean(): boolean {
  * @returns A randomly generated Uint8Array of the specified length.
  */
 export function generateBinaryData(length: number): Uint8Array {
-  return crypto.randomBytes(length);
+  return new Uint8Array(crypto.randomBytes(length));
 }
 
 /**
@@ -413,7 +474,8 @@ export function generateDouble(
 ): number {
   const randomBytes = crypto.randomBytes(8);
   const randomValue =
-    randomBytes.readUInt32BE(0) + randomBytes.readUInt32BE(4) / 0xffffffff;
+    (randomBytes.readUInt32BE(0) * 0x100000000 + randomBytes.readUInt32BE(4)) /
+    0x10000000000000000;
   return parseFloat((min + randomValue * (max - min)).toFixed(decimalPlaces));
 }
 
@@ -448,7 +510,7 @@ export function generateByte(): number {
  * @returns A randomly generated Uint8Array.
  */
 export function generateByteArray(length: number): Uint8Array {
-  return crypto.randomBytes(length);
+  return new Uint8Array(crypto.randomBytes(length));
 }
 
 /**
