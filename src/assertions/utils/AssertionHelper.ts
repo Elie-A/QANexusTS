@@ -224,16 +224,8 @@ export function assertIsTypeOf(
     actualType = "Date";
   } else if (obj instanceof RegExp) {
     actualType = "RegExp";
-  } else if (obj instanceof Error) {
-    actualType = "Error";
-  } else if (obj instanceof Promise) {
-    actualType = "Promise";
-  } else if (obj instanceof Proxy) {
-    actualType = "Proxy";
-  } else if (obj instanceof Function) {
-    actualType = "function"; // Handle functions
   } else if (obj instanceof Object) {
-    actualType = "object"; // Plain objects
+    actualType = "object";
   } else {
     actualType = typeof obj;
   }
@@ -652,8 +644,8 @@ export function assertObjectHasKeys(
   }
 }
 
-export function assertIsCollectionEmpty(
-  collection: any[],
+export function assertIsCollectionEmpty<T>(
+  collection: T[],
   message: string = `Expected empty collection, but was not.`
 ): void {
   /**
@@ -941,81 +933,54 @@ export function assertDeepInclude<T>(
   }
 }
 
+/**
+ * Asserts that a collection includes an object with a specific nested property value.
+ *
+ * @param collection - The collection of objects to check. Must be an array.
+ * @param property - The name of the property to check.
+ * @param value - The value of the nested property to search for.
+ * @param message - The message to include in the exception if the assertion fails.
+ * @throws AssertionException - If the collection does not include an object with the specified nested property value.
+ */
 export function assertNestedInclude<T>(
   collection: T[],
-  nestedElement: any,
-  message: string = `Collection does not include nested element or element is null`
+  property: keyof T,
+  value: any,
+  message: string = `Expected collection to include nested element with property '${String(
+    property
+  )}' equal to ${value}, but it does not.`
 ): void {
-  /**
-   * Asserts that the given nested element is included in the collection.
-   *
-   * @param collection - The collection to check.
-   * @param nestedElement - The nested element to check for.
-   * @param message - The error message if the assertion fails.
-   * @throws AssertionException - If the nested element is not included in the collection.
-   */
-  for (const element of collection) {
-    // Handle case where element might be null or undefined
-    if (element == null) {
-      throw new AssertionException(`Element: ${element} is null`);
-    }
-
-    if (Array.isArray(element)) {
-      if (element.includes(nestedElement)) {
-        return;
-      }
-    } else if (typeof element === "object") {
-      if (nestedElement in element) {
-        return;
-      }
-    }
-  }
-
-  throw new AssertionException(
-    `${message} Collection does not include nested element: ${JSON.stringify(
-      nestedElement
-    )}`
+  const includes = collection.some(
+    (item) => String(item[property]) === String(value)
   );
+  if (!includes) {
+    throw new AssertionException(message);
+  }
 }
 
+/**
+ * Asserts that a collection does not include an object with a specific nested property value.
+ *
+ * @param collection - The collection of objects to check. Must be an array.
+ * @param property - The name of the property to check.
+ * @param value - The value of the nested property to search for.
+ * @param message - The message to include in the exception if the assertion fails.
+ * @throws AssertionException - If the collection includes an object with the specified nested property value.
+ */
 export function assertNotNestedInclude<T>(
   collection: T[],
-  nestedElement: any,
-  message: string = `Collection includes the nested element`
+  property: keyof T,
+  value: any,
+  message: string = `Expected collection to not include nested element with property '${String(
+    property
+  )}' equal to ${value}, but it does.`
 ): void {
-  /**
-   * Asserts that the given nested element is not included in the collection.
-   *
-   * @param collection - The collection to check.
-   * @param nestedElement - The nested element to check for.
-   * @param message - The error message if the assertion fails.
-   * @throws AssertionException - If the nested element is found in the collection.
-   */
-  for (const element of collection) {
-    // Handle case where element might be null or undefined
-    if (element == null) {
-      throw new AssertionException(`Element: ${element} is null`);
-    }
-
-    if (Array.isArray(element)) {
-      if (element.includes(nestedElement)) {
-        throw new AssertionException(
-          `${message} Collection includes the nested element: ${JSON.stringify(
-            nestedElement
-          )}`
-        );
-      }
-    } else if (typeof element === "object") {
-      if (nestedElement in element) {
-        throw new AssertionException(
-          `${message} Collection includes the nested element: ${JSON.stringify(
-            nestedElement
-          )}`
-        );
-      }
-    }
+  const includes = collection.some(
+    (item) => String(item[property]) === String(value)
+  );
+  if (includes) {
+    throw new AssertionException(message);
   }
-  // No need to throw an exception if the element is not found; the function completes successfully.
 }
 
 export function assertCloseTo(
@@ -1184,23 +1149,21 @@ export function assertIsDecrementOf(
   }
 }
 
+/**
+ * Asserts that a value is not a decrement of another.
+ *
+ * @param value - The value to check.
+ * @param reference - The reference value to compare against.
+ * @param message - The message to include in the exception if the assertion fails.
+ * @throws AssertionException - If the value is exactly one less than the reference.
+ */
 export function assertNotDecrementOf(
   value: number,
   reference: number,
-  message: string = `Value is exactly one less than the reference value.`
+  message: string = `Expected ${value} to not be a decrement of ${reference}.`
 ): void {
-  /**
-   * Asserts that the value is not exactly one less than the reference value.
-   *
-   * @param value - The value to check.
-   * @param reference - The reference value.
-   * @param message - The error message if the assertion fails.
-   * @throws AssertionException - If the value is exactly one less than the reference value.
-   */
   if (value === reference - 1) {
-    throw new AssertionException(
-      `${message} Expected: ${value} not to be decrement of: ${reference}`
-    );
+    throw new AssertionException(message);
   }
 }
 
@@ -1271,38 +1234,6 @@ export function assertNegative(
     throw new AssertionException(
       `${message} Expected: ${value} to be negative`
     );
-  }
-}
-
-export function assertOdd(
-  value: number,
-  message: string = `Value is not odd`
-): void {
-  /**
-   * Asserts that the value is odd.
-   *
-   * @param value - The value to check.
-   * @param message - The error message if the assertion fails.
-   * @throws AssertionException - If the value is not odd.
-   */
-  if (value % 2 !== 1) {
-    throw new AssertionException(`${message} Expected: ${value} to be odd`);
-  }
-}
-
-export function assertEven(
-  value: number,
-  message: string = `Value is not even`
-): void {
-  /**
-   * Asserts that the value is even.
-   *
-   * @param value - The value to check.
-   * @param message - The error message if the assertion fails.
-   * @throws AssertionException - If the value is not even.
-   */
-  if (value % 2 !== 0) {
-    throw new AssertionException(`${message} Expected: ${value} to be even`);
   }
 }
 

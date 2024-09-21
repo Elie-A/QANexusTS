@@ -3,7 +3,7 @@ import { CountryCodePhoneNumberPatternEnum } from "../src/dataGenerator/enums/Co
 import { SupportedDateFormats } from "../src/dataGenerator/enums/SupportedDateFormats";
 import { UuidType } from "../src/dataGenerator/enums/UUIDEnums";
 
-describe("Library Tests", () => {
+describe("Data Generator Tests", () => {
   it("Should Generate String With Default Length", () => {
     let str = DataGenerator.generateString();
     AssertionHelper.assertIsTypeOf(str, "string");

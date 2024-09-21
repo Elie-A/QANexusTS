@@ -37,6 +37,7 @@ npm install qanexus
 - generateByteArray
 - generateChar
 - generateDate
+- generateDateObject
 - generateDouble
 - generateEmail
 - generateFloat
@@ -64,9 +65,6 @@ npm install qanexus
 - generateUniqueRandomSequence
 - generateUnixTimestamp
 - generateUuid
-- isNumeric
-- isPrime
-- readAndSaveSchema
 
 ### Assertion Helpers
 
@@ -85,7 +83,6 @@ npm install qanexus
 - assertDisjoint
 - assertEmptyObject
 - assertEquals
-- assertEven
 - assertFunctionDoesNotThrow
 - assertFunctionReturns
 - assertFunctionThrows
@@ -98,6 +95,7 @@ npm install qanexus
 - assertIsArray
 - assertIsCollectionEmpty
 - assertIsDecrementOf
+- assertIsEven
 - assertIsFalse
 - assertIsFunction
 - assertIsIncrementOf
@@ -107,8 +105,11 @@ npm install qanexus
 - assertIsNotNumber
 - assertIsNullOrUndefined
 - assertIsNumber
+- assertIsOdd
+- assertIsPrime
 - assertIsTrue
 - assertIsTypeOf
+- assertIsTypeOfClass
 - assertLessThan
 - assertLessThanOrEqual
 - assertNegative
